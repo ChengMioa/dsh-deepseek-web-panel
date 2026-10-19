@@ -1,6 +1,6 @@
 {
   "name": "dsh-deepseek-web-panel",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "把 DeepSeek 网页版作为 DSH 主区域面板：Electron webview 加载官网，官网侧栏即历史，右键可删除对话，顶部窗口带可拖动",
   "type": "module",
   "main": "lib/index.js",

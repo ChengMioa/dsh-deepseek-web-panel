@@ -33,6 +33,7 @@ globalThis.document = {
 	createElement: () => ({ id: "", textContent: "", style: {}, appendChild() {} }),
 	head: { appendChild() {} },
 	addEventListener() {},
+	querySelector: () => null,
 	body: { appendChild() {} },
 };
 globalThis.localStorage = { getItem: () => null };
@@ -66,6 +67,9 @@ const ctx = {
 	layout: {
 		selectPanel(id) {
 			calls.push(["selectPanel", id]);
+		},
+		toggleSidebar() {
+			calls.push(["toggleSidebar"]);
 		},
 	},
 	conversation: { input: { shell: () => undefined } },

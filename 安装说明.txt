@@ -1,4 +1,4 @@
-dsh-deepseek-web-panel 0.3.1 —— 安装说明
+dsh-deepseek-web-panel 0.3.2 —— 安装说明
 =====================================
 
 要求：DeepSeek Harness 桌面版（macOS / Windows / Linux 客户端）。
@@ -6,15 +6,15 @@ dsh-deepseek-web-panel 0.3.1 —— 安装说明
 
 准备
 ----
-把压缩包里的 dsh-deepseek-web-panel-0.3.1.tgz 解压到电脑上任意位置，记住它的完整路径
-（例如 /Users/you/Downloads/dsh-deepseek-web-panel-0.3.1.tgz）。
+把压缩包里的 dsh-deepseek-web-panel-0.3.2.tgz 解压到电脑上任意位置，记住它的完整路径
+（例如 /Users/you/Downloads/dsh-deepseek-web-panel-0.3.2.tgz）。
 
 方式一：图形界面（推荐，不用命令行）
 ------------------------------------
 1. 打开 DeepSeek Harness。
 2. 左下角「设置」→「插件」→「添加插件」（安装第三方插件）。
 3. 在「包名或地址」里填入 .tgz 的完整路径，例如：
-      /Users/you/Downloads/dsh-deepseek-web-panel-0.3.1.tgz
+      /Users/you/Downloads/dsh-deepseek-web-panel-0.3.2.tgz
    也可以填插件目录的完整路径。
 4. 点「安装」，等待完成。
 5. 完全退出 DSH（macOS 按 ⌘Q）再重新打开。
@@ -23,7 +23,7 @@ dsh-deepseek-web-panel 0.3.1 —— 安装说明
 方式二：命令行（macOS，DSH 装在 /Applications 时）
 --------------------------------------------------
   DSH_HOME=~/.dsh "/Applications/DeepSeek Harness.app/Contents/Resources/runtime/cli/bin/dsh" \
-    plugin --profile desktop add file:/绝对路径/dsh-deepseek-web-panel-0.3.1.tgz
+    plugin --profile desktop add file:/绝对路径/dsh-deepseek-web-panel-0.3.2.tgz
 
 然后 ⌘Q 重开。Windows / Linux 客户端的 dsh 可执行文件路径不同，建议用方式一。
 
