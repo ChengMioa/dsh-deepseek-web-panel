@@ -68,6 +68,14 @@ const ctx = {
 			calls.push(["selectPanel", id]);
 		},
 	},
+	conversation: { input: { shell: () => undefined } },
+	uiSession: {
+		current: {
+			getSnapshot: () => ({ key: "session-test" }),
+			subscribe: () => () => {},
+		},
+	},
+	effect: (fn) => fn(),
 };
 
 mod.apply(ctx);
