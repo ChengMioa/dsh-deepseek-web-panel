@@ -1,0 +1,7 @@
+# dsh-deepseek-web —— bundle 挂载声明
+#
+# 本文件把一个 Loader 条目插入 profile 的配置树；真正的界面在 ./lib/client.js
+# （浏览器半侧），通过 package.json 的 dsh.client 声明被 web 端发现。
+- insert:
+    - id: dsh-deepseek-web-panel
+      name: dsh-deepseek-web-panel

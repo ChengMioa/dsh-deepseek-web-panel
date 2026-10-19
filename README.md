@@ -1,0 +1,112 @@
+# dsh-deepseek-web-panel
+
+把 **DeepSeek 网页版**接进 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness)：
+主区域一个全局面板，用 Electron `<webview>` 加载真正的 `chat.deepseek.com`。
+**不经过 API**，历史列表直接使用官网自带的侧栏，右键可删除对话。
+
+> Bring the real DeepSeek website into DeepSeek Harness as a center panel. No API, no
+> iframe: the page runs in an Electron `<webview>` guest approved by the desktop host.
+
+## 使用
+
+左侧栏底部有地球图标 **「网页区」**（侧栏收起时只显示图标）。点击后：
+
+- 中间主区域切换成 DeepSeek 官网，**官网自己的侧栏就是历史列表**
+  （今天 / 昨天 / 7 天内 / 30 天内 / 按月分组，置顶与多选都是官网原样）；
+- **右键**侧栏里的任意对话 → 菜单「删除该对话」→ 再点一次确认 → 走官网自己的删除接口，
+  删除成功后页面自动刷新。不可恢复，所以是两步确认；
+- 侧栏收起时顶部留出 48px 窗口带，**整条带子**（DSH 控件右侧）都能按住拖动窗口；网页内容下移，避开红绿灯；
+- 侧栏收起、面板贴到窗口左上角时，内容整体下移 48px，避开红绿灯和 DSH 的重新打开控件；
+- 点左侧栏任意会话即可回到 DSH 对话。
+
+## 环境要求
+
+- **桌面版 DeepSeek Harness**（macOS / Windows / Linux）。网页版（`dsh web` 在浏览器里打开）
+  没有 Electron webview，面板会显示「网页区需要在桌面版客户端中使用」。
+- 复用桌面版已有的 webview 租约协议（`dshDesktop.browser`），没有绕开主进程的沙箱与网络策略。
+
+## 安装
+
+```bash
+# 已发布到 npm 时（profile 用 desktop）
+dsh plugin --profile desktop add dsh-deepseek-web-panel
+
+# 从 tarball 安装
+dsh plugin --profile desktop add file:/path/to/dsh-deepseek-web-panel-0.3.0.tgz
+
+# 本地开发（软链当前目录）
+dsh plugin --profile desktop add link:$PWD
+```
+
+`dsh plugin add` 会自动把包写进 profile 的 `dsh.profile.bundles`，**完全退出并重开客户端**后生效。
+卸载：
+
+```bash
+dsh plugin --profile desktop remove dsh-deepseek-web-panel
+```
+
+## 实现
+
+| 文件 | 作用 |
+|---|---|
+| `package.json` | `dsh.bundle.patch` + `dsh.client`（浏览器半侧入口 `./client`） |
+| `cordis.patch.yml` | 向 profile 插入 Loader 条目 `dsh-deepseek-web-panel` |
+| `lib/index.js` | Node 半侧：空实现，只为让 Loader 有条目 |
+| `lib/client.js` | 浏览器半侧：注册 `main` 面板（key `deepseek-web`）与 `sidebar.footer.action` 入口；面板内申请 webview 租约、加载站点，并往页面里注入右键删除 |
+
+### 为什么是 webview
+
+`chat.deepseek.com` 返回 `Content-Security-Policy: frame-ancestors 'none'`，普通 iframe
+一定被拒绝。桌面版主窗口开启了 `webviewTag`，主进程实现了一套 guest 租约：
+
+1. `dshDesktop.browser.acquire(workspaceKey)` 申请租约，得到 `{ lease, partition }`；
+2. 创建一个 `<webview name=lease partition=… src="about:blank#lease">` 并挂到 DOM；
+3. 主进程在 `will-attach-webview` 校验租约/分区，随后收紧权限（sandbox、无 Node、
+   拒绝权限请求、拦截下载、禁止访问 DSH 自身 host）；
+4. `dom-ready` 之后 `loadURL()` 导航。
+
+### 右键删除
+
+站点的历史侧栏没有右键菜单，所以插件在网页自己的 origin 里注入一小段脚本：
+
+- 先从站点自己的 `GET /api/v0/chat_session/fetch_page` 取一份「标题 → id」缓存；
+- 监听左栏（`clientX ≤ 340`）的 `contextmenu`，用被点行的标题匹配会话；
+- 菜单里的「删除该对话」第一次点击变为「再次点击确认删除」，确认后调用站点的
+  `POST /api/v0/chat_session/delete`（`{ chat_session_ids: [id] }`）；
+- 站点的 `userToken` 只在网页上下文内用于这次请求，插件不读取、不保存。
+
+这是依赖站点内部 DOM/接口的增强，站点改版可能失效；失效时官网自带的「… → 删除」仍然可用。
+
+### 窗口拖动
+
+主区域叠 `-webkit-app-region: drag` 会吞掉下面网页的点击，所以拖动层不能常驻。
+只在侧栏完全收起、面板贴住窗口左上角时，顶部会多出一条 48px 的空白带（网页内容下移让出来的），
+这条带子从 DSH 的「重新打开侧栏 / 新会话」控件右侧一直延伸到窗口右边，整条都是拖动区；
+侧栏展开时带子高度为 0，网页区域完全可点。
+
+侧栏完全收起时（macOS 隐藏整列），面板获得 `--dsh-frame-leading-clearance`，此时给面板加
+`padding-top: min(var(--dsh-frame-leading-clearance), 48px)`；拖动层用同样的高度，
+`left: var(--dsh-frame-leading-clearance)`、`right: 0`，正好铺满这条带子。
+
+## 自检
+
+```bash
+node test/smoke.mjs
+```
+
+模拟模块加载器、React、`slots`/`layout` 服务与 DOM，检查面板/入口注册、点击后
+`layout.selectPanel("deepseek-web")`，以及右键删除脚本只安装一次、包含站点删除接口与二次确认。
+
+## 发布
+
+```bash
+pnpm pack                 # 产出 dsh-deepseek-web-panel-<version>.tgz
+pnpm publish --access public
+```
+
+发布前确认包名在 npm 上未被占用；如需改名，`package.json` 的 `name` 与
+`cordis.patch.yml` 里 `name:` 必须一致（Loader 用包名解析）。
+
+## License
+
+MIT，见 [LICENSE](LICENSE)。

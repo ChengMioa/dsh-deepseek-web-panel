@@ -1,0 +1,54 @@
+{
+  "name": "dsh-deepseek-web-panel",
+  "version": "0.3.0",
+  "description": "把 DeepSeek 网页版作为 DSH 主区域面板：Electron webview 加载官网，官网侧栏即历史，右键可删除对话，顶部窗口带可拖动",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": {
+      "default": "./lib/index.js"
+    },
+    "./client": {
+      "default": "./lib/client.js"
+    },
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "cordis.patch.yml",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "deepseek",
+    "webview"
+  ],
+  "license": "MIT",
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-sidebar-right"
+      ]
+    }
+  },
+  "engines": {
+    "dsh": "^0.2.1-rc.2"
+  },
+  "author": "ChengMioa",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ChengMioa/dsh-deepseek-web-panel.git"
+  },
+  "homepage": "https://github.com/ChengMioa/dsh-deepseek-web-panel#readme",
+  "bugs": {
+    "url": "https://github.com/ChengMioa/dsh-deepseek-web-panel/issues"
+  }
+}

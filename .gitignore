@@ -1,0 +1,4 @@
+node_modules/
+*.tgz
+*-分享包.zip
+backup-*

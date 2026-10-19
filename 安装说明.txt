@@ -1,0 +1,46 @@
+dsh-deepseek-web-panel 0.3.0 —— 安装说明
+=====================================
+
+要求：DeepSeek Harness 桌面版（macOS / Windows / Linux 客户端）。
+浏览器里打开的 dsh web（网页版）没有 Electron webview，用不了这个插件。
+
+准备
+----
+把压缩包里的 dsh-deepseek-web-panel-0.3.0.tgz 解压到电脑上任意位置，记住它的完整路径
+（例如 /Users/you/Downloads/dsh-deepseek-web-panel-0.3.0.tgz）。
+
+方式一：图形界面（推荐，不用命令行）
+------------------------------------
+1. 打开 DeepSeek Harness。
+2. 左下角「设置」→「插件」→「添加插件」（安装第三方插件）。
+3. 在「包名或地址」里填入 .tgz 的完整路径，例如：
+      /Users/you/Downloads/dsh-deepseek-web-panel-0.3.0.tgz
+   也可以填插件目录的完整路径。
+4. 点「安装」，等待完成。
+5. 完全退出 DSH（macOS 按 ⌘Q）再重新打开。
+6. 左侧栏底部出现地球图标「网页区」，点开就是 DeepSeek 网页。
+
+方式二：命令行（macOS，DSH 装在 /Applications 时）
+--------------------------------------------------
+  DSH_HOME=~/.dsh "/Applications/DeepSeek Harness.app/Contents/Resources/runtime/cli/bin/dsh" \
+    plugin --profile desktop add file:/绝对路径/dsh-deepseek-web-panel-0.3.0.tgz
+
+然后 ⌘Q 重开。Windows / Linux 客户端的 dsh 可执行文件路径不同，建议用方式一。
+
+验证
+----
+- 「设置 → 插件」里能看到 dsh-deepseek-web-panel；
+- 左侧栏底部有「网页区」；
+- 面板里第一次使用需要登录 DeepSeek 账号。
+
+卸载
+----
+设置 → 插件 → 卸载；或者命令行：
+  ... plugin --profile desktop remove dsh-deepseek-web-panel
+
+注意
+----
+- 插件以你的用户权限在本机运行，只安装你信任的人给的包。
+- 官网可能弹出 “Abnormal usage environment”（检测到嵌入环境），关掉即可；如果登录被拦截，
+  说明官网不再接受 webview 环境，插件就无法登录使用。
+- 右键删除、窗口拖动依赖官网页面结构，官网改版后可能失效。
